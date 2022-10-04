@@ -7,7 +7,7 @@
 		{{/* If there is no swarm node or the port is not published on host, use container's IP:PORT */}}
 		{{ else }}
 			# {{ .Container.Name }}
-			server {{ .Container.Name }}:{{ .Address.Port }};
+			server {{ .Container.Name }}:{{ .Address.HostPort }};
 		{{ end }}
 	{{ else }}
 		# {{ .Container.Name }}
@@ -74,7 +74,8 @@ server {
 {{ $host := first ( split $hostfull ":" ) }}
 {{ $port := last ( split $hostfull ":" ) }}
 
-upstream {{ $host }} {
+upstream {{ $host }}
+{
 {{ range $container := $containers }}
 	{{ $addrLen := len $container.Addresses }}
 	{{/* If only 1 port exposed, use that */}}
@@ -86,7 +87,6 @@ upstream {{ $host }} {
 	{{ else if (and ($port ) (ne $port $host) ) }}
 		{{ range $address := .Addresses }}
 		   {{ if eq $address.Port $port }}
-		   {{ $address := $port }}
 		   	{{ template "upstream" (dict "Container" $container "Address" $address) }}
 		   {{ end }}
 		{{ end }}
