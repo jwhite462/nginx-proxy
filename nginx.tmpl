@@ -118,13 +118,13 @@ upstream {{ .Upstream }} {
                         {{ else if $containerNetwork }}
                             {{ $server_found = "true" }}
         # {{ $container.Name }}
-        server {{ $container.Name }}:{{ $address.HostPort }};
+        server {{ $containerNetwork.IP }}:{{ $address.HostPort }};
                         {{ end }}
                     {{ else if $containerNetwork }}
         # {{ $container.Name }}
                         {{ if $containerNetwork.IP }}
                             {{ $server_found = "true" }}
-        server {{ $container.Name }}:{{ $address.HostPort }};
+        server {{ $containerNetwork.IP }}:{{ $address.HostPort }};
                         {{ else }}
         # /!\ No IP for this network!
                     	{{ end }}
