@@ -107,7 +107,7 @@ upstream {{ .Upstream }} {
 		{{ range $knownNetwork := $networks }}
 			{{ range $containerNetwork := $container.Networks }}
 				{{ if (and (ne $containerNetwork.Name "ingress") (or (eq $knownNetwork.Name $containerNetwork.Name) (eq $knownNetwork.Name "host"))) }}
-        ## Can be connected with "{{ $containerNetwork.Name }}" network
+        ##THis Can be connected with "{{ $containerNetwork.Name }}" network ......
                     {{ if $address }}
                         {{/* If we got the containers from swarm and this container's port is published to host, use host IP:PORT */}}
                         {{ if and $container.Node.ID $address.HostPort }}
@@ -118,13 +118,13 @@ upstream {{ .Upstream }} {
                         {{ else if $containerNetwork }}
                             {{ $server_found = "true" }}
         # {{ $container.Name }}
-        server {{ $containerNetwork.IP }}:{{ $address.Port }};
+        server {{ $container.Name }}:{{ $address.HostPort }};
                         {{ end }}
                     {{ else if $containerNetwork }}
         # {{ $container.Name }}
                         {{ if $containerNetwork.IP }}
                             {{ $server_found = "true" }}
-        server {{ $containerNetwork.IP }}:{{ $port }};
+        server {{ $container.Name }}:{{ $address.HostPort }};
                         {{ else }}
         # /!\ No IP for this network!
                     	{{ end }}
