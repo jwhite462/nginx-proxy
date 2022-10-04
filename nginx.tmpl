@@ -7,7 +7,7 @@
 		{{/* If there is no swarm node or the port is not published on host, use container's IP:PORT */}}
 		{{ else }}
 			# {{ .Container.Name }}
-			server {{ .Address.IP }}:{{ .Address.Port }};
+			server {{ .Container.Name }}:{{ $my_port}};
 		{{ end }}
 	{{ else }}
 		# {{ .Container.Name }}
@@ -72,9 +72,9 @@ server {
 
 {{ range $hostfull, $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
 {{ $host := first ( split $hostfull ":" ) }}
-{{ $port := last ( split $hostfull ":" ) }}
+{{ $my_port := last ( split $hostfull ":" ) }}
 
-upstream {{ $host }}:{{ $port }} {
+upstream {{ $host }}{
 {{ range $container := $containers }}
 	{{ $addrLen := len $container.Addresses }}
 	{{/* If only 1 port exposed, use that */}}
