@@ -76,7 +76,7 @@ server {
 
 upstream {{ $host }}
 {
-{{ range $container := $containers }}
+{{ range $container := $containers }} {{ $port }} ## $port
 	{{ $addrLen := len $container.Addresses }}
 	{{/* If only 1 port exposed, use that */}}
 	{{ if eq $addrLen 1 }}
