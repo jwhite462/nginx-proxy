@@ -74,7 +74,7 @@ server {
 {{ $host := first ( split $hostfull ":" ) }}
 {{ $port := last ( split $hostfull ":" ) }}
 
-upstream {{ $host }} {
+upstream {{ $host }}:{{ $port }} {
 {{ range $container := $containers }}
 	{{ $addrLen := len $container.Addresses }}
 	{{/* If only 1 port exposed, use that */}}
