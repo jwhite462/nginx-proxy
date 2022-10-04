@@ -85,15 +85,14 @@ upstream {{ $host }} {
 	{{ else if (and ($port ) (ne $port $host) ) }}
 		{{ range $address := .Addresses }}
 		   {{ if eq $address.Port $port }}
-		   {{ $address :=  $my_port }}
-		   	{{ template "upstream" (dict "Container" $container "Address" $address) }}
+		   	{{ template "upstream" (dict "Container" $container "Address" $my_port) }}
 		   {{ end }}
 		{{ end }}
 	{{/* If more than one port exposed, use the one matching VIRTUAL_PORT env var, falling back to standard web port 80 */}}
 	{{ else }}
 		{{ $port := last ( split $hostfull ":" ) }}
-		{{ $address :=  $my_port }}
-		{{ template "upstream" (dict "Container" $container "Address" $address) }}
+		{{ $address :=  $port }}
+		{{ template "upstream" (dict "Container" $container "Address" $my_port) }}
 	{{ end }}
 {{ end }}
 }
