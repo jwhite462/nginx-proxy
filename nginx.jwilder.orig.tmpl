@@ -252,15 +252,26 @@ server {
 }
 {{ end }}
 
+{{ range $host, $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
 
-{{ range $hostfull, $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
-    {{ $host := first ( split $hostfull ":" ) }}
-    {{ $port := last ( split $hostfull ":" ) }}
+{{ $host := trim $host }}
+{{ $is_regexp := hasPrefix "~" $host }}
+{{ $upstream_name := when (or $is_regexp $sha1_upstream_name) (sha1 $host) $host }}
 
-    upstream {{ $host }}
-    {
-    server web:{{ $port }};
-    }
+{{ $paths := groupBy $containers "Env.VIRTUAL_PATH" }}
+{{ $nPaths := len $paths }}
+
+{{ if eq $nPaths 0 }}
+	# {{ $host }}
+	{{ template "upstream" (dict "Upstream" $upstream_name "Containers" $containers "Networks" $CurrentContainer.Networks "Debug" $debug_all) }}
+{{ else }}
+	{{ range $path, $containers := $paths }}
+		{{ $sum := sha1 $path }}
+		{{ $upstream := printf "%s-%s" $upstream_name $sum }}
+		# {{ $host }}{{ $path }}
+		{{ template "upstream" (dict "Upstream" $upstream "Containers" $containers "Networks" $CurrentContainer.Networks "Debug" $debug_all) }}
+	{{ end }}
+{{ end }}
 
 {{ $default_host := or ($.Env.DEFAULT_HOST) "" }}
 {{ $default_server := index (dict $host "" $default_host "default_server") $host }}
